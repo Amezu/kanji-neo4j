@@ -1,0 +1,5 @@
+{
+  "name": "Kanji Graph DB",
+  "description": "",
+  "addons": [ "heroku-postgresql" ]
+}
