@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example;
+package com.github.amezu.kanji_neo4j;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -49,12 +49,7 @@ public class Main {
     }
 
     @RequestMapping("/")
-    String index() {
-        return "index";
-    }
-
-    @RequestMapping("/db")
-    String db(Map<String, Object> model) {
+    String index(Map<String, Object> model) {
         try (Connection connection = dataSource.getConnection()) {
             Statement stmt = connection.createStatement();
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
@@ -67,7 +62,7 @@ public class Main {
             }
 
             model.put("records", output);
-            return "db";
+            return "index";
         } catch (Exception e) {
             model.put("message", e.getMessage());
             return "error";
