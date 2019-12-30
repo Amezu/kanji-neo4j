@@ -1,0 +1,14 @@
+{
+  "name": "kanji-neo4j",
+  "description": "",
+  "version": "0.1.0",
+  "engines": {
+    "node": "12.x"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.15.2",
+    "neo4j-driver": "^4.0.1"
+  },
+  "license": "MIT"
+}
