@@ -16,67 +16,47 @@
 
 package com.github.amezu.kanji_neo4j;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.neo4j.driver.v1.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Map;
 
 @Controller
 @SpringBootApplication
 public class Main {
 
-    @Value("${spring.datasource.url}")
-    private String dbUrl;
-
-    @Autowired
-    private DataSource dataSource;
-
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
     }
 
     @RequestMapping("/")
     String index(Map<String, Object> model) {
-        try (Connection connection = dataSource.getConnection()) {
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-            stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
-            ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
+        String url = System.getenv().get("GRAPHENEDB_BOLT_URL");
+        String user = System.getenv().get("GRAPHENEDB_BOLT_USER");
+        String password = System.getenv().get("GRAPHENEDB_BOLT_PASSWORD");
 
-            ArrayList<String> output = new ArrayList<String>();
-            while (rs.next()) {
-                output.add("Read from DB: " + rs.getTimestamp("tick"));
-            }
+        Driver driver = GraphDatabase.driver(url, AuthTokens.basic(user, password));
 
-            model.put("records", output);
-            return "index";
+        try (Session session = driver.session()) {
+            final String message = addAndGet(session, "Hello world!");
+            model.put("message", message);
+            return "error";
         } catch (Exception e) {
             model.put("message", e.getMessage());
             return "error";
         }
     }
 
-    @Bean
-    public DataSource dataSource() throws SQLException {
-        if (dbUrl == null || dbUrl.isEmpty()) {
-            return new HikariDataSource();
-        } else {
-            HikariConfig config = new HikariConfig();
-            config.setJdbcUrl(dbUrl);
-            return new HikariDataSource(config);
-        }
+    private String addAndGet(Session session, String message) {
+        return session.writeTransaction(tx -> {
+            StatementResult result = tx.run("CREATE (a:Greeting) " +
+                            "SET a.message = $message " +
+                            "RETURN a.message + ', from node ' + id(a)",
+                    Values.parameters("message", message));
+            return result.single().get(0).asString();
+        });
     }
 }
