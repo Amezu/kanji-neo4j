@@ -59,7 +59,7 @@ public class Main implements AutoCloseable {
             ArrayList<String> records = new ArrayList<String>();
             while (result.hasNext()) {
                 Record record = result.next();
-                records.add(record.get("name").asString());
+                records.add(record.get("message").asString());
             }
             model.put("records", records);
             return "index";
