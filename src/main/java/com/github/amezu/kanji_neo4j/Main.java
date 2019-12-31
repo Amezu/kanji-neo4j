@@ -26,19 +26,29 @@ import java.util.Map;
 
 @Controller
 @SpringBootApplication
-public class Main {
+public class Main implements AutoCloseable {
+
+    private final Driver driver;
+
+    public Main() {
+        String url = System.getenv().get("GRAPHENEDB_BOLT_URL");
+        String user = System.getenv().get("GRAPHENEDB_BOLT_USER");
+        String password = System.getenv().get("GRAPHENEDB_BOLT_PASSWORD");
+
+        driver = GraphDatabase.driver(url, AuthTokens.basic(user, password));
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
     }
 
+    @Override
+    public void close() {
+        driver.close();
+    }
+
     @RequestMapping("/")
     String index(Map<String, Object> model) {
-        String url = System.getenv().get("GRAPHENEDB_BOLT_URL");
-        String user = System.getenv().get("GRAPHENEDB_BOLT_USER");
-        String password = System.getenv().get("GRAPHENEDB_BOLT_PASSWORD");
-
-        Driver driver = GraphDatabase.driver(url, AuthTokens.basic(user, password));
 
         try (Session session = driver.session()) {
             final String message = addAndGet(session, "Hello world!");
