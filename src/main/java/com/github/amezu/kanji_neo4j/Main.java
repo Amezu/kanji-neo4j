@@ -22,7 +22,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.Map;
+
+import static org.neo4j.driver.v1.Values.parameters;
 
 @Controller
 @SpringBootApplication
@@ -48,25 +51,39 @@ public class Main implements AutoCloseable {
     }
 
     @RequestMapping("/")
-    String index(Map<String, Object> model) {
-
+    String getAllMessages(Map<String, Object> model) {
         try (Session session = driver.session()) {
-            final String message = addAndGet(session, "Hello world!");
-            model.put("message", message);
-            return "error";
+            StatementResult result = session.run(
+                    "MATCH (a:Greeting) WHERE a.message STARTS WITH {x} RETURN a.message + ' (' + id(a) + ')' AS message",
+                    parameters("x", "Hello"));
+            ArrayList<String> records = new ArrayList<String>();
+            while (result.hasNext()) {
+                Record record = result.next();
+                records.add(record.get("name").asString());
+            }
+            model.put("records", records);
+            return "index";
         } catch (Exception e) {
             model.put("message", e.getMessage());
             return "error";
         }
     }
 
-    private String addAndGet(Session session, String message) {
-        return session.writeTransaction(tx -> {
-            StatementResult result = tx.run("CREATE (a:Greeting) " +
-                            "SET a.message = $message " +
-                            "RETURN a.message + ', from node ' + id(a)",
-                    Values.parameters("message", message));
-            return result.single().get(0).asString();
-        });
+    @RequestMapping("/add")
+    String addMessage(Map<String, Object> model) {
+        try (Session session = driver.session()) {
+            final String message = session.writeTransaction(tx -> {
+                StatementResult result = tx.run("CREATE (a:Greeting) " +
+                                "SET a.message = $message " +
+                                "RETURN a.message + ', from node ' + id(a)",
+                        parameters("message", "Hello world!"));
+                return result.single().get(0).asString();
+            });
+            model.put("message", message);
+            return "error";
+        } catch (Exception e) {
+            model.put("message", e.getMessage());
+            return "error";
+        }
     }
 }
