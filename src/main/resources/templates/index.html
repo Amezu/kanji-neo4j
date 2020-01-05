@@ -2,12 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'db')}">
 
 <body>
-  <div class="container">
-    <h1>Database Output</h1>
-    <ul th:each="record : ${records}">
-      <li th:text="${record}"/>
+<main class="container">
+    <ul class="list-group mt-5 mb-5" th:each="kanji : ${kanjis}">
+        <li class="list-group-item">
+            <h2>
+                <span th:text="${kanji.character}"></span>
+                <small th:each="reading, status : ${kanji.reading}">
+                    <span th:text="${reading} + (${status.last} ? '' : ', ')"></span>
+                </small>
+                <br/>
+            </h2>
+            Strokes: <span th:text="${kanji.strokes}"></span><br/>
+        </li>
     </ul>
-  </div>
+</main>
 </body>
 
 </html>

@@ -16,32 +16,36 @@
 
 package com.github.amezu.kanji_neo4j;
 
-import org.neo4j.driver.v1.*;
+import com.github.amezu.kanji_neo4j.model.Kanji;
+import org.neo4j.ogm.config.Configuration;
+import org.neo4j.ogm.session.Session;
+import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static org.neo4j.driver.v1.Values.parameters;
+import java.util.*;
 
 @Controller
 @SpringBootApplication
 public class KanjiNeo4jApplication implements AutoCloseable {
 
-    private final Driver driver;
+    private final SessionFactory factory;
 
     public KanjiNeo4jApplication() {
-        String url = System.getenv().get("GRAPHENEDB_BOLT_URL");
+        String uri = System.getenv().get("GRAPHENEDB_BOLT_URL");
         String user = System.getenv().get("GRAPHENEDB_BOLT_USER");
         String password = System.getenv().get("GRAPHENEDB_BOLT_PASSWORD");
 
-        driver = GraphDatabase.driver(url, AuthTokens.basic(user, password));
+        Configuration configuration = new Configuration.Builder()
+                .uri(uri)
+                .credentials(user, password)
+                .build();
+
+        factory = new SessionFactory(configuration, "com.github.amezu.kanji_neo4j.model", "com.github.amezu.kanji_neo4j");
     }
 
     public static void main(String[] args) {
@@ -50,72 +54,23 @@ public class KanjiNeo4jApplication implements AutoCloseable {
 
     @Override
     public void close() {
-        driver.close();
+        factory.close();
     }
 
     @RequestMapping(value = {"/kanji", ""})
-    String getAllKanjis(@RequestParam(value = "search", required = false, defaultValue = "") String reading, Map<String, Object> model) {
-        try (Session session = driver.session()) {
-            String query = reading.equals("")
-                    ? "MATCH (k:Kanji) RETURN *"
-                    : "MATCH (k:Kanji) WHERE {reading} IN k.reading RETURN *";
-            StatementResult result = session.run(
-                    query,
-                    parameters("reading", reading));
-            ArrayList<String> records = new ArrayList<>();
-            while (result.hasNext()) {
-                Value node = result.next().get("k");
-                String text = String.format("%s (%d strokes) \n\r\n\r readings: %s",
-                        node.get("character").asString(),
-                        node.get("strokes").asInt(),
-                        node.get("reading").asList(Value::asString).toString().replace("[", "").replace("]", ""));
-                records.add(text);
-            }
-            model.put("records", records);
-            return "index";
-        } catch (Exception e) {
-            model.put("message", e.getMessage());
-            return "error";
-        }
-    }
-    
-    @RequestMapping("/kanji/{id}")
-    String getKanji(@PathVariable int id, Map<String, Object> model) {
-        try (Session session = driver.session()) {
-            StatementResult result = session.run(
-                    "MATCH (k:Kanji) WHERE id(k) = {id} RETURN *",
-                    parameters("id", id));
-            ArrayList<String> records = new ArrayList<>();
-            while (result.hasNext()) {
-                Value node = result.next().get("k");
-                String text = String.format("%s (%d strokes) \n\r\n\r readings: %s",
-                        node.get("character").asString(),
-                        node.get("strokes").asInt(),
-                        node.get("reading").asList(Value::asString).toString().replace("[", "").replace("]", ""));
-                records.add(text);
-            }
-            model.put("records", records);
-            return "index";
-        } catch (Exception e) {
-            model.put("message", e.getMessage());
-            return "error";
-        }
+    String getAllKanjis(@RequestParam(value = "search", required = false, defaultValue = "") String reading, Model model) {
+        Session session = factory.openSession();
+        Collection<Kanji> kanjis = session.loadAll(Kanji.class, 0);
+        model.addAttribute("kanjis", kanjis);
+        return "index";
     }
 
     @RequestMapping("/kanji/add")
-    String addKanji(@RequestParam("char") String character, @RequestParam("read") List<String> reading, @RequestParam Integer strokes, Map<String, Object> model) {
-        try (Session session = driver.session()) {
-            final String message = session.writeTransaction(tx -> {
-                StatementResult result = tx.run(
-                        "CREATE (k:Kanji) SET k.character = {character}, k.reading = {reading}, k.strokes = {strokes} RETURN k.character + ', from node ' + id(k)",
-                        parameters("character", character, "reading", reading, "strokes", strokes));
-                return result.single().get(0).asString();
-            });
-            model.put("message", "Added kanji " + message);
-            return "error";
-        } catch (Exception e) {
-            model.put("message", e.getMessage());
-            return "error";
-        }
+    String addKanji(@RequestParam("char") String character, @RequestParam Integer strokes, @RequestParam("read") List<String> reading, Map<String, Object> model) {
+        Session session = factory.openSession();
+        Kanji kanji = new Kanji(character, strokes, reading);
+        session.save(kanji, 1);
+        model.put("message", "Added kanji " + kanji.getCharacter());
+        return "error";
     }
 }
