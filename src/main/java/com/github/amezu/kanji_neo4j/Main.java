@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -51,13 +52,13 @@ public class Main implements AutoCloseable {
         driver.close();
     }
 
-    @RequestMapping("/")
-    String getAllMessages(Map<String, Object> model) {
+    @RequestMapping(value = {"/greeting", ""})
+    String getAllGreetings(@RequestParam(value = "search", required = false, defaultValue = "") String messagePart, Map<String, Object> model) {
         try (Session session = driver.session()) {
             StatementResult result = session.run(
                     "MATCH (g:Greeting) WHERE g.message STARTS WITH {messagePart} RETURN g.message + ' (' + id(g) + ')' AS message",
-                    parameters("messagePart", "Hello"));
-            ArrayList<String> records = new ArrayList<String>();
+                    parameters("messagePart", messagePart));
+            ArrayList<String> records = new ArrayList<>();
             while (result.hasNext()) {
                 Record record = result.next();
                 records.add(record.get("message").asString());
@@ -70,13 +71,13 @@ public class Main implements AutoCloseable {
         }
     }
 
-    @RequestMapping("/{id}")
-    String getMessage(@PathVariable("id") int id, Map<String, Object> model) {
+    @RequestMapping("/greeting/{id}")
+    String getGreeting(@PathVariable int id, Map<String, Object> model) {
         try (Session session = driver.session()) {
             StatementResult result = session.run(
                     "MATCH (g:Greeting) WHERE id(g) = {id} RETURN g.message + ' (' + id(g) + ')' AS message",
                     parameters("id", id));
-            ArrayList<String> records = new ArrayList<String>();
+            ArrayList<String> records = new ArrayList<>();
             while (result.hasNext()) {
                 Record record = result.next();
                 records.add(record.get("message").asString());
@@ -89,8 +90,8 @@ public class Main implements AutoCloseable {
         }
     }
 
-    @RequestMapping("/add")
-    String addMessage(Map<String, Object> model) {
+    @RequestMapping("/greeting/add")
+    String addGreeting(Map<String, Object> model) {
         try (Session session = driver.session()) {
             final String message = session.writeTransaction(tx -> {
                 StatementResult result = tx.run("CREATE (g:Greeting) " +
