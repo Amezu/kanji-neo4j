@@ -32,11 +32,11 @@ import static org.neo4j.driver.v1.Values.parameters;
 
 @Controller
 @SpringBootApplication
-public class Main implements AutoCloseable {
+public class KanjiNeo4jApplication implements AutoCloseable {
 
     private final Driver driver;
 
-    public Main() {
+    public KanjiNeo4jApplication() {
         String url = System.getenv().get("GRAPHENEDB_BOLT_URL");
         String user = System.getenv().get("GRAPHENEDB_BOLT_USER");
         String password = System.getenv().get("GRAPHENEDB_BOLT_PASSWORD");
@@ -45,7 +45,7 @@ public class Main implements AutoCloseable {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
+        SpringApplication.run(KanjiNeo4jApplication.class, args);
     }
 
     @Override
@@ -57,15 +57,19 @@ public class Main implements AutoCloseable {
     String getAllKanjis(@RequestParam(value = "search", required = false, defaultValue = "") String reading, Map<String, Object> model) {
         try (Session session = driver.session()) {
             String query = reading.equals("")
-                    ? "MATCH (k:Kanji) RETURN k.character + ' ' + k.reading AS kanji"
-                    : "MATCH (k:Kanji) WHERE {reading} IN k.reading RETURN k.character + ' ' + k.reading AS kanji";
+                    ? "MATCH (k:Kanji) RETURN *"
+                    : "MATCH (k:Kanji) WHERE {reading} IN k.reading RETURN *";
             StatementResult result = session.run(
                     query,
                     parameters("reading", reading));
             ArrayList<String> records = new ArrayList<>();
             while (result.hasNext()) {
-                Record record = result.next();
-                records.add(record.get("kanji").asString());
+                Value node = result.next().get("k");
+                String text = String.format("%s (%d strokes) \n\r\n\r readings: %s",
+                        node.get("character").asString(),
+                        node.get("strokes").asInt(),
+                        node.get("reading").asList(Value::asString).toString().replace("[", "").replace("]", ""));
+                records.add(text);
             }
             model.put("records", records);
             return "index";
@@ -74,17 +78,21 @@ public class Main implements AutoCloseable {
             return "error";
         }
     }
-
+    
     @RequestMapping("/kanji/{id}")
     String getKanji(@PathVariable int id, Map<String, Object> model) {
         try (Session session = driver.session()) {
             StatementResult result = session.run(
-                    "MATCH (k:Kanji) WHERE id(k) = {id} RETURN k.character + ' ' + k.reading AS kanji",
+                    "MATCH (k:Kanji) WHERE id(k) = {id} RETURN *",
                     parameters("id", id));
             ArrayList<String> records = new ArrayList<>();
             while (result.hasNext()) {
-                Record record = result.next();
-                records.add(record.get("kanji").asString());
+                Value node = result.next().get("k");
+                String text = String.format("%s (%d strokes) \n\r\n\r readings: %s",
+                        node.get("character").asString(),
+                        node.get("strokes").asInt(),
+                        node.get("reading").asList(Value::asString).toString().replace("[", "").replace("]", ""));
+                records.add(text);
             }
             model.put("records", records);
             return "index";
@@ -99,8 +107,8 @@ public class Main implements AutoCloseable {
         try (Session session = driver.session()) {
             final String message = session.writeTransaction(tx -> {
                 StatementResult result = tx.run(
-                        "CREATE (k:Kanji) SET k.character = {character}, k.reading = {reading} RETURN k.character + ', from node ' + id(k)",
-                        parameters("character", character, "reading", reading));
+                        "CREATE (k:Kanji) SET k.character = {character}, k.reading = {reading}, k.strokes = {strokes} RETURN k.character + ', from node ' + id(k)",
+                        parameters("character", character, "reading", reading, "strokes", strokes));
                 return result.single().get(0).asString();
             });
             model.put("message", "Added kanji " + message);
