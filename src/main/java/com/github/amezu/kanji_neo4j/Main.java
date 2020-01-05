@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.neo4j.driver.v1.Values.parameters;
@@ -55,8 +56,11 @@ public class Main implements AutoCloseable {
     @RequestMapping(value = {"/kanji", ""})
     String getAllKanjis(@RequestParam(value = "search", required = false, defaultValue = "") String reading, Map<String, Object> model) {
         try (Session session = driver.session()) {
+            String query = reading.equals("")
+                    ? "MATCH (k:Kanji) RETURN k.character + ' ' + k.reading AS kanji"
+                    : "MATCH (k:Kanji) WHERE {reading} IN k.reading RETURN k.character + ' ' + k.reading AS kanji";
             StatementResult result = session.run(
-                    "MATCH (k:Kanji) WHERE k.reading STARTS WITH {reading} RETURN k.character + ' (' + id(k) + ')' AS kanji",
+                    query,
                     parameters("reading", reading));
             ArrayList<String> records = new ArrayList<>();
             while (result.hasNext()) {
@@ -75,7 +79,7 @@ public class Main implements AutoCloseable {
     String getKanji(@PathVariable int id, Map<String, Object> model) {
         try (Session session = driver.session()) {
             StatementResult result = session.run(
-                    "MATCH (k:Kanji) WHERE id(k) = {id} RETURN k.character + ' (' + id(k) + ')' AS kanji",
+                    "MATCH (k:Kanji) WHERE id(k) = {id} RETURN k.character + ' ' + k.reading AS kanji",
                     parameters("id", id));
             ArrayList<String> records = new ArrayList<>();
             while (result.hasNext()) {
@@ -91,7 +95,7 @@ public class Main implements AutoCloseable {
     }
 
     @RequestMapping("/kanji/add")
-    String addKanji(@RequestParam("char") String character, @RequestParam("read") String reading, Map<String, Object> model) {
+    String addKanji(@RequestParam("char") String character, @RequestParam("read") List<String> reading, @RequestParam Integer strokes, Map<String, Object> model) {
         try (Session session = driver.session()) {
             final String message = session.writeTransaction(tx -> {
                 StatementResult result = tx.run(
