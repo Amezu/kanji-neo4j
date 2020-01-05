@@ -20,6 +20,7 @@ import org.neo4j.driver.v1.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
@@ -54,8 +55,27 @@ public class Main implements AutoCloseable {
     String getAllMessages(Map<String, Object> model) {
         try (Session session = driver.session()) {
             StatementResult result = session.run(
-                    "MATCH (a:Greeting) WHERE a.message STARTS WITH {x} RETURN a.message + ' (' + id(a) + ')' AS message",
-                    parameters("x", "Hello"));
+                    "MATCH (g:Greeting) WHERE g.message STARTS WITH {messagePart} RETURN g.message + ' (' + id(g) + ')' AS message",
+                    parameters("messagePart", "Hello"));
+            ArrayList<String> records = new ArrayList<String>();
+            while (result.hasNext()) {
+                Record record = result.next();
+                records.add(record.get("message").asString());
+            }
+            model.put("records", records);
+            return "index";
+        } catch (Exception e) {
+            model.put("message", e.getMessage());
+            return "error";
+        }
+    }
+
+    @RequestMapping("/{id}")
+    String getMessage(@PathVariable("id") int id, Map<String, Object> model) {
+        try (Session session = driver.session()) {
+            StatementResult result = session.run(
+                    "MATCH (g:Greeting) WHERE id(g) = {id} RETURN g.message + ' (' + id(g) + ')' AS message",
+                    parameters("id", id));
             ArrayList<String> records = new ArrayList<String>();
             while (result.hasNext()) {
                 Record record = result.next();
@@ -73,9 +93,9 @@ public class Main implements AutoCloseable {
     String addMessage(Map<String, Object> model) {
         try (Session session = driver.session()) {
             final String message = session.writeTransaction(tx -> {
-                StatementResult result = tx.run("CREATE (a:Greeting) " +
-                                "SET a.message = $message " +
-                                "RETURN a.message + ', from node ' + id(a)",
+                StatementResult result = tx.run("CREATE (g:Greeting) " +
+                                "SET g.message = $message " +
+                                "RETURN g.message + ', from node ' + id(g)",
                         parameters("message", "Hello world!"));
                 return result.single().get(0).asString();
             });
