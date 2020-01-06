@@ -3,7 +3,7 @@
 
 <body>
 <main class="container">
-    <ul class="list-group mt-5 mb-5" th:each="kanji : ${kanjis}">
+    <ul class="list-group" th:each="kanji : ${kanjis}">
         <li class="list-group-item">
             <h2>
                 <span th:text="${kanji.character}"></span>
