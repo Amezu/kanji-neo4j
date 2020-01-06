@@ -8,6 +8,7 @@ import org.neo4j.ogm.cypher.Filter;
 import org.neo4j.ogm.session.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -30,6 +31,14 @@ public class KanjiController {
                     "MATCH (k:Kanji) WHERE ANY (r IN k.reading WHERE r CONTAINS {reading}) RETURN *",
                     Map.of("reading", search));
         }
+        model.addAttribute("kanjis", kanjis);
+        return "kanji-list";
+    }
+
+    @RequestMapping("/{id}")
+    String getKanji(@PathVariable long id, Model model) {
+        Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
+        Iterable<Kanji> kanjis = Set.of(session.load(Kanji.class, id));
         model.addAttribute("kanjis", kanjis);
         return "kanji-list";
     }
