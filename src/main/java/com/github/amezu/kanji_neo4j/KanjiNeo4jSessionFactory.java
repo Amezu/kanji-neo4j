@@ -16,7 +16,7 @@ public class KanjiNeo4jSessionFactory {
                         System.getenv().get("GRAPHENEDB_BOLT_PASSWORD"))
                 .build();
 
-        sessionFactory = new SessionFactory(configuration, "com.github.amezu.kanji_neo4j.model", "com.github.amezu.kanji_neo4j");
+        sessionFactory = new SessionFactory(configuration, "com.github.amezu.kanji_neo4j.domain", "com.github.amezu.kanji_neo4j");
     }
 
     public static KanjiNeo4jSessionFactory getInstance() {

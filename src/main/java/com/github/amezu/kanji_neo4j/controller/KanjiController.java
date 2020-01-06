@@ -1,7 +1,7 @@
 package com.github.amezu.kanji_neo4j.controller;
 
 import com.github.amezu.kanji_neo4j.KanjiNeo4jSessionFactory;
-import com.github.amezu.kanji_neo4j.model.Kanji;
+import com.github.amezu.kanji_neo4j.domain.Kanji;
 import org.neo4j.ogm.session.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,4 +1,4 @@
-package com.github.amezu.kanji_neo4j.model;
+package com.github.amezu.kanji_neo4j.domain;
 
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
