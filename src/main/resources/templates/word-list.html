@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'db')}">
+
+<body>
+<main class="container">
+    <ul class="list-group" th:each="word : ${words}">
+        <li class="list-group-item">
+            <h2>
+                <span th:text="${word.japanese}"></span>
+                <small th:text="${word.romaji}"></small>
+            </h2>
+            <div th:each="meaning : ${word.meanings}">
+                <p th:text="${meaning.word}"></p>
+            </div>
+        </li>
+    </ul>
+</main>
+</body>
+
+</html>
