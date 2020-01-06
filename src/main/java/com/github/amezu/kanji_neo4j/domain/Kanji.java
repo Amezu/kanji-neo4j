@@ -37,6 +37,10 @@ public class Kanji extends Entity {
         return reading;
     }
 
+    public Set<Word> getWords() {
+        return words;
+    }
+
     public void addWord(Word word) {
         if (words == null) {
             words = new HashSet<>();

@@ -6,13 +6,21 @@
     <ul class="list-group" th:each="kanji : ${kanjis}">
         <li class="list-group-item">
             <h2>
-                <span th:text="${kanji.character}"></span>
+                <th:block th:text="${kanji.character}"></th:block>
                 <small th:each="reading, status : ${kanji.reading}">
-                    <span th:text="${reading} + (${status.last} ? '' : ', ')"></span>
+                    <th:block th:text="${reading} + (${status.last} ? '' : ', ')"></th:block>
                 </small>
                 <br/>
             </h2>
-            Strokes: <span th:text="${kanji.strokes}"></span><br/>
+            <p>
+                Strokes: <th:block th:text="${kanji.strokes}"></th:block>
+            </p>
+            <p>
+                Words:
+                <th:block th:each="word, status : ${kanji.words}">
+                    <a th:href="|/word/${word.id}|" th:text="${word.japanese}"></a><th:block th:text="(${status.last} ? '' : ', ')"></th:block>
+                </th:block>
+            </p>
         </li>
     </ul>
 </main>
