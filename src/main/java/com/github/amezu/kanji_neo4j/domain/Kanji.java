@@ -1,17 +1,12 @@
 package com.github.amezu.kanji_neo4j.domain;
 
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 
 import java.util.List;
 
 @NodeEntity
-public class Kanji {
+public class Kanji extends Entity {
 
-    @Id
-    @GeneratedValue
-    private Long id;
     private String character;
     private Integer strokes;
     private List<String> reading;
@@ -23,10 +18,6 @@ public class Kanji {
         this.character = character;
         this.strokes = strokes;
         this.reading = reading;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getCharacter() {
