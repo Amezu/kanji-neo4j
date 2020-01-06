@@ -6,9 +6,16 @@
     <ul class="list-group" th:each="word : ${words}">
         <li class="list-group-item">
             <h2>
-                <span th:text="${word.japanese}"></span>
+                <th:block th:text="${word.japanese}"></th:block>
                 <small th:text="${word.romaji}"></small>
             </h2>
+
+            <p>
+                Related kanji:
+                <th:block th:each="kanji, status : ${word.kanjis}">
+                    <a th:href="|/kanji/${kanji.id}|" th:text="${kanji.character}"></a><th:block th:text="(${status.last} ? '' : ', ')"></th:block>
+                </th:block>
+            </p>
 
             <table width="100%">
                 <thead>
