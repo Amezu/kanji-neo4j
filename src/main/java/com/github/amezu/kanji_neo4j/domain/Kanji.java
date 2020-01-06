@@ -12,14 +12,14 @@ public class Kanji extends Entity {
 
     private String character;
     private Integer strokes;
-    private List<String> reading;
+    private Set<String> reading;
     @Relationship(type = "CONTAINS", direction = Relationship.INCOMING)
     private Set<Word> words;
 
     public Kanji() {
     }
 
-    public Kanji(String character, Integer strokes, List<String> reading) {
+    public Kanji(String character, Integer strokes, Set<String> reading) {
         this.character = character;
         this.strokes = strokes;
         this.reading = reading;
@@ -33,7 +33,7 @@ public class Kanji extends Entity {
         return strokes;
     }
 
-    public List<String> getReading() {
+    public Set<String> getReading() {
         return reading;
     }
 
