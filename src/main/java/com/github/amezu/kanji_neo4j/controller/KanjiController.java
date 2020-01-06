@@ -2,6 +2,7 @@ package com.github.amezu.kanji_neo4j.controller;
 
 import com.github.amezu.kanji_neo4j.KanjiNeo4jSessionFactory;
 import com.github.amezu.kanji_neo4j.domain.Kanji;
+import com.github.amezu.kanji_neo4j.domain.Word;
 import org.neo4j.ogm.session.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,7 +34,16 @@ public class KanjiController {
     @RequestMapping("/add")
     String addKanji(@RequestParam("char") String character, @RequestParam Integer strokes, @RequestParam("read") List<String> reading, Map<String, Object> model) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
+
         Kanji kanji = new Kanji(character, strokes, reading);
+
+        Iterable<Word> words = session.query(Word.class,
+                "MATCH (w:Word) WHERE w.japanese CONTAINS {kanji} RETURN *",
+                Map.of("kanji", character));
+        for (Word word : words) {
+            kanji.addWord(word);
+        }
+
         session.save(kanji, 1);
         model.put("message", "Added kanji " + kanji.getCharacter());
         return "error";

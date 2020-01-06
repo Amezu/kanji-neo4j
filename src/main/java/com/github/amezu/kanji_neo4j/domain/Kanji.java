@@ -1,8 +1,11 @@
 package com.github.amezu.kanji_neo4j.domain;
 
 import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @NodeEntity
 public class Kanji extends Entity {
@@ -10,6 +13,8 @@ public class Kanji extends Entity {
     private String character;
     private Integer strokes;
     private List<String> reading;
+    @Relationship(type = "CONTAINS", direction = Relationship.INCOMING)
+    private Set<Word> words;
 
     public Kanji() {
     }
@@ -30,5 +35,12 @@ public class Kanji extends Entity {
 
     public List<String> getReading() {
         return reading;
+    }
+
+    public void addWord(Word word) {
+        if (words == null) {
+            words = new HashSet<>();
+        }
+        words.add(word);
     }
 }
