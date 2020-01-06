@@ -4,12 +4,15 @@ import com.github.amezu.kanji_neo4j.KanjiNeo4jSessionFactory;
 import com.github.amezu.kanji_neo4j.domain.Kanji;
 import com.github.amezu.kanji_neo4j.domain.Translation;
 import com.github.amezu.kanji_neo4j.domain.Word;
+import org.neo4j.ogm.cypher.ComparisonOperator;
+import org.neo4j.ogm.cypher.Filter;
 import org.neo4j.ogm.session.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +60,7 @@ public class WordController {
 
         session.save(word, 1);
 
-        model.put("message", "Added word " + word.getJapanese());
+        model.put("message", "Added word " + word.getJapanese() + " with related kanjis: " + kanjis.toString());
         return "error";
     }
 }
