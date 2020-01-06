@@ -1,5 +1,6 @@
-package com.github.amezu.kanji_neo4j;
+package com.github.amezu.kanji_neo4j.controller;
 
+import com.github.amezu.kanji_neo4j.KanjiNeo4jSessionFactory;
 import com.github.amezu.kanji_neo4j.model.Kanji;
 import org.neo4j.ogm.session.Session;
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,7 @@ public class KanjiController {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
         Collection<Kanji> kanjis = session.loadAll(Kanji.class, 0);
         model.addAttribute("kanjis", kanjis);
-        return "index";
+        return "kanji-list";
     }
 
     @RequestMapping("/add")
@@ -29,6 +30,6 @@ public class KanjiController {
         Kanji kanji = new Kanji(character, strokes, reading);
         session.save(kanji, 1);
         model.put("message", "Added kanji " + kanji.getCharacter());
-        return "error";
+        return "info";
     }
 }
