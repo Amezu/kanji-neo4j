@@ -36,6 +36,6 @@ public class KanjiController {
         Kanji kanji = new Kanji(character, strokes, reading);
         session.save(kanji, 1);
         model.put("message", "Added kanji " + kanji.getCharacter());
-        return "info";
+        return "error";
     }
 }

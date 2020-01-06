@@ -41,6 +41,6 @@ public class WordController {
         }
         session.save(word, 1);
         model.put("message", "Added word " + word.getJapanese());
-        return "info";
+        return "error";
     }
 }
