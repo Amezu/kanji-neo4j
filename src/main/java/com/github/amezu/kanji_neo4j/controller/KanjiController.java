@@ -25,10 +25,10 @@ public class KanjiController {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
         Iterable<Kanji> kanjis;
         if (search.equals("")) {
-            kanjis = session.loadAll(Kanji.class, 0);
+            kanjis = session.loadAll(Kanji.class, 1);
         } else {
             kanjis = session.query(Kanji.class,
-                    "MATCH (k:Kanji) WHERE ANY (r IN k.reading WHERE r CONTAINS {reading}) RETURN *",
+                    "MATCH (kanji)--(word) WHERE ANY (r IN kanji.reading WHERE r CONTAINS {reading}) RETURN *",
                     Map.of("reading", search));
         }
         model.addAttribute("kanjis", kanjis);
