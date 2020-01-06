@@ -10,12 +10,14 @@ import org.neo4j.ogm.cypher.Filters;
 import org.neo4j.ogm.session.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/word")
@@ -34,6 +36,14 @@ public class WordController {
                     Map.of("search", search));
         }
 
+        model.addAttribute("words", words);
+        return "word-list";
+    }
+
+    @RequestMapping("/{id}")
+    String getKanji(@PathVariable long id, Model model) {
+        Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
+        Iterable<Word> words = Set.of(session.load(Word.class, id));
         model.addAttribute("words", words);
         return "word-list";
     }
