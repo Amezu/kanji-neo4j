@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
@@ -43,14 +44,14 @@ public class KanjiController {
         return "kanji-list";
     }
 
-    @RequestMapping("/add")
-    String addKanji(@RequestParam("char") String character, @RequestParam Integer strokes, @RequestParam("read") Set<String> reading, Map<String, Object> model) {
+    @RequestMapping(value = "/add", produces = "text/plain")
+    @ResponseBody
+    String addKanji(@RequestParam("char") String character, @RequestParam Integer strokes, @RequestParam("read") Set<String> reading) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
 
         boolean kanjiExists = session.count(Kanji.class, List.of(new Filter("character", ComparisonOperator.EQUALS, character))) != 0;
         if (kanjiExists) {
-            model.put("message", String.format("Kanji %s already exists", character));
-            return "error";
+            return (String.format("Kanji %s already exists", character));
         }
 
         Kanji kanji = new Kanji(character, strokes, reading);
@@ -63,7 +64,6 @@ public class KanjiController {
         }
 
         session.save(kanji, 1);
-        model.put("message", String.format("Added kanji %s", kanji.getCharacter()));
-        return "error";
+        return String.format("Added kanji %s", kanji.getCharacter());
     }
 }
