@@ -6,6 +6,7 @@ import com.github.amezu.kanji_neo4j.domain.Translation;
 import com.github.amezu.kanji_neo4j.domain.Word;
 import org.neo4j.ogm.cypher.ComparisonOperator;
 import org.neo4j.ogm.cypher.Filter;
+import org.neo4j.ogm.cypher.Filters;
 import org.neo4j.ogm.session.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,8 +42,15 @@ public class WordController {
     String addWord(@RequestParam("jp") String japanese, @RequestParam("ro") String romaji, @RequestParam("en") List<String> meanings, Map<String, Object> model) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
 
-        Word word = new Word(japanese, romaji);
+        Filters sameJapaneseAndRomaji = new Filter("japanese", ComparisonOperator.EQUALS, japanese)
+                .and(new Filter("romaji", ComparisonOperator.EQUALS, romaji));
+        boolean wordExists = session.count(Word.class, sameJapaneseAndRomaji) != 0;
+        if (wordExists) {
+            model.put("message", String.format("Word %s (%s) already exists", japanese, romaji));
+            return "error";
+        }
 
+        Word word = new Word(japanese, romaji);
         for (String meaning : meanings) {
             String[] allLanguages = meaning.split("_");
             String english = allLanguages[0];
@@ -50,14 +58,6 @@ public class WordController {
             Translation translation = new Translation(english, polish);
             word.addMeaning(translation);
         }
-
-        Iterable<Kanji> kanjis = session.query(Kanji.class,
-                "MATCH (k:Kanji) WHERE '{word}' CONTAINS k.character RETURN *",
-                Map.of("word", japanese));
-        for (Kanji kanji : kanjis) {
-            word.addKanji(kanji);
-        }
-
         session.save(word, 1);
 
         session.query("MATCH (w:Word) WHERE id(w)={id} MATCH (k:Kanji) WHERE w.japanese CONTAINS k.character CREATE (w) -[:CONTAINS]-> (k)",
