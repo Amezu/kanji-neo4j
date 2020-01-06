@@ -36,7 +36,10 @@ public class WordController {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
         Word word = new Word(japanese, romaji);
         for (String meaning : meanings) {
-            Translation translation = new Translation(meaning);
+            String[] allLanguages = meaning.split("_");
+            String english = allLanguages[0];
+            String polish = allLanguages.length > 1 ? allLanguages[1] : "";
+            Translation translation = new Translation(english, polish);
             word.addMeaning(translation);
         }
         session.save(word, 1);
