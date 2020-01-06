@@ -3,8 +3,8 @@ package com.github.amezu.kanji_neo4j.domain;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @NodeEntity
 public class Word extends Entity {
@@ -12,7 +12,9 @@ public class Word extends Entity {
     private String japanese;
     private String romaji;
     @Relationship(type = "MEANS")
-    private List<Translation> meanings;
+    private Set<Translation> meanings;
+    @Relationship(type = "CONTAINS")
+    private Set<Kanji> kanjis;
 
     public Word() {
     }
@@ -30,14 +32,25 @@ public class Word extends Entity {
         return romaji;
     }
 
-    public List<Translation> getMeanings() {
+    public Set<Translation> getMeanings() {
         return meanings;
+    }
+
+    public Set<Kanji> getKanjis() {
+        return kanjis;
     }
 
     public void addMeaning(Translation translation) {
         if (meanings == null) {
-            meanings = new ArrayList<>();
+            meanings = new HashSet<>();
         }
         meanings.add(translation);
+    }
+
+    public void addKanji(Kanji kanji) {
+        if (kanjis == null) {
+            kanjis = new HashSet<>();
+        }
+        kanjis.add(kanji);
     }
 }

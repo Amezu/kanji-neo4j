@@ -1,6 +1,7 @@
 package com.github.amezu.kanji_neo4j.controller;
 
 import com.github.amezu.kanji_neo4j.KanjiNeo4jSessionFactory;
+import com.github.amezu.kanji_neo4j.domain.Kanji;
 import com.github.amezu.kanji_neo4j.domain.Translation;
 import com.github.amezu.kanji_neo4j.domain.Word;
 import org.neo4j.ogm.session.Session;
@@ -19,6 +20,7 @@ public class WordController {
     @RequestMapping
     public String getAllWords(@RequestParam(required = false, defaultValue = "") String search, Model model) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
+
         Iterable<Word> words;
         if (search.equals("")) {
             words = session.loadAll(Word.class, 1);
@@ -27,6 +29,7 @@ public class WordController {
                     "MATCH (w:Word) WHERE ANY (r IN w.romaji WHERE r CONTAINS {search}) RETURN *",
                     Map.of("search", search));
         }
+
         model.addAttribute("words", words);
         return "word-list";
     }
@@ -34,7 +37,9 @@ public class WordController {
     @RequestMapping("/add")
     String addWord(@RequestParam("jp") String japanese, @RequestParam("ro") String romaji, @RequestParam("en") List<String> meanings, Map<String, Object> model) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
+
         Word word = new Word(japanese, romaji);
+
         for (String meaning : meanings) {
             String[] allLanguages = meaning.split("_");
             String english = allLanguages[0];
@@ -43,7 +48,15 @@ public class WordController {
             word.addMeaning(translation);
         }
 
+        Iterable<Kanji> kanjis = session.query(Kanji.class,
+                "MATCH (k:Kanji) WHERE '{word}' CONTAINS k.character RETURN *",
+                Map.of("word", japanese));
+        for (Kanji kanji : kanjis) {
+            word.addKanji(kanji);
+        }
+
         session.save(word, 1);
+
         model.put("message", "Added word " + word.getJapanese());
         return "error";
     }
