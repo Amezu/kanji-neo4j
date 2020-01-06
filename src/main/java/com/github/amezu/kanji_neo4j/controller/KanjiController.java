@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,15 +16,15 @@ import java.util.Map;
 public class KanjiController {
 
     @RequestMapping
-    String getAllKanjis(@RequestParam(value = "search", required = false, defaultValue = "") String reading, Model model) {
+    String getAllKanjis(@RequestParam(required = false, defaultValue = "") String search, Model model) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
         Iterable<Kanji> kanjis;
-        if (reading.equals("")) {
+        if (search.equals("")) {
             kanjis = session.loadAll(Kanji.class, 0);
         } else {
-            Map<String, String> parameters = new HashMap<>();
-            parameters.put("reading", reading);
-            kanjis = session.query(Kanji.class, "MATCH (k:Kanji) WHERE {reading} IN k.reading RETURN *", parameters);
+            kanjis = session.query(Kanji.class,
+                    "MATCH (k:Kanji) WHERE ANY (r IN k.reading WHERE r CONTAINS {reading}) RETURN *",
+                    Map.of("reading", search));
         }
         model.addAttribute("kanjis", kanjis);
         return "kanji-list";
