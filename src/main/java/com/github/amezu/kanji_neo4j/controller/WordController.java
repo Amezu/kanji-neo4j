@@ -60,7 +60,10 @@ public class WordController {
 
         session.save(word, 1);
 
-        model.put("message", "Added word " + word.getJapanese() + " with related kanjis: " + kanjis.toString());
+        session.query("MATCH (w:Word) WHERE id(w)={id} MATCH (k:Kanji) WHERE w.japanese CONTAINS k.character CREATE (w) -[:CONTAINS]-> (k)",
+                Map.of("id", word.getId()));
+
+        model.put("message", String.format("Added word %s", word.getJapanese()));
         return "error";
     }
 }
