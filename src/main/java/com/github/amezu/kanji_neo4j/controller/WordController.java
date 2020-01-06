@@ -24,7 +24,7 @@ public class WordController {
             words = session.loadAll(Word.class, 1);
         } else {
             words = session.query(Word.class,
-                    "MATCH (w:Word) WHERE ANY (r IN w.romaji WHERE r CONTAINS {search}) OR  RETURN *",
+                    "MATCH (w:Word) WHERE ANY (r IN w.romaji WHERE r CONTAINS {search}) RETURN *",
                     Map.of("search", search));
         }
         model.addAttribute("words", words);
@@ -42,6 +42,7 @@ public class WordController {
             Translation translation = new Translation(english, polish);
             word.addMeaning(translation);
         }
+
         session.save(word, 1);
         model.put("message", "Added word " + word.getJapanese());
         return "error";
