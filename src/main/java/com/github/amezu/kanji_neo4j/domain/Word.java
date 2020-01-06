@@ -11,7 +11,7 @@ public class Word extends Entity {
 
     private String japanese;
     private String romaji;
-    @Relationship(type = "means")
+    @Relationship(type = "MEANS")
     private List<Translation> meanings;
 
     public Word() {

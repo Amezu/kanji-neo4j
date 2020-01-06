@@ -21,7 +21,7 @@ public class WordController {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
         Iterable<Word> words;
         if (search.equals("")) {
-            words = session.loadAll(Word.class, 0);
+            words = session.loadAll(Word.class, 1);
         } else {
             words = session.query(Word.class,
                     "MATCH (w:Word) WHERE ANY (r IN w.romaji WHERE r CONTAINS {search}) OR  RETURN *",
