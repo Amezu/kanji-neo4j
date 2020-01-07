@@ -1,0 +1,39 @@
+<div class="card m-3">
+    <form class="card-body">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2>
+                    <input pattern="[\u4e00-\u9faf\u3400-\u4dbfぁ-ゔァ-ヴー々〆〤]+" size="8" required="">
+                    <small><input class="text-muted" pattern="[a-z]+" required=""></small>
+                </h2>
+            </div>
+
+            <div class="col-auto ml-auto">
+                <button type="submit" class="btn btn-light">Add word</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <table width="100%">
+                    <thead>
+                    <tr>
+                        <th width="50%">
+                            <img src="https://image.flaticon.com/icons/svg/555/555417.svg" alt="EN" height="20px"/>
+                        </th>
+                        <th width="50%">
+                            <img src="https://image.flaticon.com/icons/svg/555/555571.svg" alt="PL" height="20px"/>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input pattern="[a-z]+" required=""></td>
+                        <td><input pattern="[a-zżźćńółęąś]+"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
