@@ -1,20 +1,21 @@
 package com.github.amezu.kanji_neo4j.controller;
 
 import com.github.amezu.kanji_neo4j.KanjiNeo4jSessionFactory;
-import com.github.amezu.kanji_neo4j.domain.Kanji;
 import com.github.amezu.kanji_neo4j.domain.Translation;
 import com.github.amezu.kanji_neo4j.domain.Word;
 import org.neo4j.ogm.cypher.ComparisonOperator;
 import org.neo4j.ogm.cypher.Filter;
 import org.neo4j.ogm.cypher.Filters;
 import org.neo4j.ogm.session.Session;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,15 +50,20 @@ public class WordController {
     }
 
     @RequestMapping("/add")
-    String addWord(@RequestParam("jp") String japanese, @RequestParam("ro") String romaji, @RequestParam("en") List<String> meanings, Map<String, Object> model) {
+    @ResponseBody
+    ResponseEntity<String> addWord(
+            @RequestParam("jp") String japanese,
+            @RequestParam("ro") String romaji,
+            @RequestParam("en") List<String> meanings) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
 
         Filters sameJapaneseAndRomaji = new Filter("japanese", ComparisonOperator.EQUALS, japanese)
                 .and(new Filter("romaji", ComparisonOperator.EQUALS, romaji));
         boolean wordExists = session.count(Word.class, sameJapaneseAndRomaji) != 0;
         if (wordExists) {
-            model.put("message", String.format("Word %s (%s) already exists", japanese, romaji));
-            return "error";
+            return new ResponseEntity<>(
+                    String.format("Word %s (%s) already exists", japanese, romaji),
+                    HttpStatus.BAD_REQUEST);
         }
 
         Word word = new Word(japanese, romaji);
@@ -73,7 +79,8 @@ public class WordController {
         session.query("MATCH (w:Word) WHERE id(w)={id} MATCH (k:Kanji) WHERE w.japanese CONTAINS k.character CREATE (w) -[:CONTAINS]-> (k)",
                 Map.of("id", word.getId()));
 
-        model.put("message", String.format("Added word %s", word.getJapanese()));
-        return "error";
+        return new ResponseEntity<>(
+                String.format("Added word %s", word.getJapanese()),
+                HttpStatus.OK);
     }
 }
