@@ -20,10 +20,9 @@ import java.util.Map;
 import java.util.Set;
 
 @Controller
-@RequestMapping("/kanji")
 public class KanjiController {
 
-    @RequestMapping
+    @RequestMapping(value = {"/kanji", "/"})
     String getAllKanjis(@RequestParam(required = false, defaultValue = "") String search, Model model) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
         Iterable<Kanji> kanjis;
@@ -38,7 +37,7 @@ public class KanjiController {
         return "kanji-list";
     }
 
-    @RequestMapping("/{id}")
+    @RequestMapping("/kanji/{id}")
     String getKanji(@PathVariable long id, Model model) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
         Iterable<Kanji> kanjis = Set.of(session.load(Kanji.class, id));
@@ -46,7 +45,7 @@ public class KanjiController {
         return "kanji-list";
     }
 
-    @RequestMapping(value = "/add", produces = "text/plain")
+    @RequestMapping(value = "/kanji/add", produces = "text/plain")
     @ResponseBody
     ResponseEntity<String> addKanji(@RequestParam("char") String character, @RequestParam Integer strokes, @RequestParam("read") Set<String> reading) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
