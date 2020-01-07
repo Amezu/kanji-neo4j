@@ -1,0 +1,14 @@
+<div class="card m-3">
+    <form class="card-body row align-items-center">
+        <div class="col">
+            <h2>
+                <input pattern="[\u4e00-\u9faf\u3400-\u4dbf]" maxlength="1" size="1" required="">
+                <small><input class="text-muted" pattern="([a-z]+, )*[a-z]+" required=""></small>
+            </h2>
+            Strokes: <input maxlength="2" size="2" pattern="[1-9][0-9]?" required="">
+        </div>
+        <div class="col-auto ml-auto">
+            <button type="submit" class="btn btn-light">Add kanji</button>
+        </div>
+    </form>
+</div>
