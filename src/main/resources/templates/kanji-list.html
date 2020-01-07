@@ -12,6 +12,9 @@
                         <th:block th:text="${reading} + (${status.last} ? '' : ', ')"></th:block>
                     </th:block>
                 </small>
+                <a th:href="|/kanji/${kanji.id}/edit/|">
+                    <img src="https://image.flaticon.com/icons/svg/149/149307.svg" height="1em" alt="Edit"/>
+                </a>
             </h2>
 
             Strokes:
@@ -20,7 +23,8 @@
 
             Words:
             <th:block th:each="word, status : ${kanji.words}">
-                <a th:href="|/word/${word.id}|" th:text="${word.japanese}"></a><th:block th:text="(${status.last} ? '' : ', ')"></th:block>
+                <a th:href="|/word/${word.id}|" th:text="${word.japanese}"></a>
+                <th:block th:text="(${status.last} ? '' : ', ')"></th:block>
             </th:block>
         </div>
     </div>
