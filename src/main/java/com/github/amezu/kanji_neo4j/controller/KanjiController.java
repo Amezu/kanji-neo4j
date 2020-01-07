@@ -6,6 +6,8 @@ import com.github.amezu.kanji_neo4j.domain.Word;
 import org.neo4j.ogm.cypher.ComparisonOperator;
 import org.neo4j.ogm.cypher.Filter;
 import org.neo4j.ogm.session.Session;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,12 +48,14 @@ public class KanjiController {
 
     @RequestMapping(value = "/add", produces = "text/plain")
     @ResponseBody
-    String addKanji(@RequestParam("char") String character, @RequestParam Integer strokes, @RequestParam("read") Set<String> reading) {
+    ResponseEntity<String> addKanji(@RequestParam("char") String character, @RequestParam Integer strokes, @RequestParam("read") Set<String> reading) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
 
         boolean kanjiExists = session.count(Kanji.class, List.of(new Filter("character", ComparisonOperator.EQUALS, character))) != 0;
         if (kanjiExists) {
-            return (String.format("Kanji %s already exists", character));
+            return new ResponseEntity<>(
+                    String.format("Kanji %s already exists", character),
+                    HttpStatus.BAD_REQUEST);
         }
 
         Kanji kanji = new Kanji(character, strokes, reading);
@@ -64,6 +68,8 @@ public class KanjiController {
         }
 
         session.save(kanji, 1);
-        return String.format("Added kanji %s", kanji.getCharacter());
+        return new ResponseEntity<>(
+                String.format("Added kanji %s", kanji.getCharacter()),
+                HttpStatus.OK);
     }
 }

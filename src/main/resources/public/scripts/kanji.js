@@ -13,6 +13,7 @@ function addKanji() {
         url: "/kanji/add?char=" + character + "&strokes=" + strokes + "&read=" + reading,
         success: function (result) {
             alert(result);
+            $("form")[0].reset();
             location.reload();
         },
         error: function (e) {
