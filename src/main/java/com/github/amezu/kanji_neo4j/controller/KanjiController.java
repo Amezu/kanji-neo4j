@@ -72,8 +72,22 @@ public class KanjiController {
     @RequestMapping("/kanji/{id}/edit")
     String getKanjiEditForm(@PathVariable long id, Model model) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
-        Iterable<Kanji> kanjis = Set.of(session.load(Kanji.class, id));
-        model.addAttribute("kanji", kanjis.iterator().next());
+        Kanji kanji = session.load(Kanji.class, id);
+        model.addAttribute("kanji", kanji);
         return "kanji-edit";
+    }
+
+    @RequestMapping(value = "/kanji/{id}/update", produces = "text/plain")
+    ResponseEntity<String> updateKanji(@PathVariable long id, @RequestParam Integer strokes, @RequestParam("read") Set<String> reading) {
+        Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
+
+        Kanji kanji = session.load(Kanji.class, id);
+        kanji.setStrokes(strokes);
+        kanji.setReading(reading);
+        session.save(kanji, 1);
+
+        return new ResponseEntity<>(
+                String.format("Edited kanji %s", kanji.getCharacter()),
+                HttpStatus.OK);
     }
 }

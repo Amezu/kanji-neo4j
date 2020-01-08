@@ -37,6 +37,14 @@ public class Kanji extends Entity {
         return reading;
     }
 
+    public void setStrokes(Integer strokes) {
+        this.strokes = strokes;
+    }
+
+    public void setReading(Set<String> reading) {
+        this.reading = reading;
+    }
+
     public Set<Word> getWords() {
         return words;
     }
