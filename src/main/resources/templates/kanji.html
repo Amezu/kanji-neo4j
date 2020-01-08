@@ -3,14 +3,12 @@
 
 <body>
 <main class="container">
-    <div class="card m-3" th:each="kanji : ${kanjis}">
+    <div class="card m-3">
         <div th:replace="~{fragments/kanji}"></div>
     </div>
 
-    <div th:replace="~{fragments/kanji-form :: form('add')}"></div>
+    <a href="/kanji">All kanjis</a> | <a href="/word">All words</a>
 </main>
-
-<script src="/scripts/add-kanji.js"></script>
 
 </body>
 

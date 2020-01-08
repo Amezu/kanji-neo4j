@@ -39,7 +39,7 @@ public class KanjiController {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
         Iterable<Kanji> kanjis = Set.of(session.load(Kanji.class, id));
         model.addAttribute("kanjis", kanjis);
-        return "kanji-list";
+        return "kanji";
     }
 
     @RequestMapping(value = "/kanji/add", produces = "text/plain")
