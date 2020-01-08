@@ -11,7 +11,7 @@ function editKanji() {
         success: function (result) {
             alert(result);
             $("form")[0].reset();
-            location.reload();
+            location.href += "/..";
         },
         error: function (e) {
             alert(e.responseText);
