@@ -10,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -70,5 +67,13 @@ public class KanjiController {
         return new ResponseEntity<>(
                 String.format("Added kanji %s", kanji.getCharacter()),
                 HttpStatus.OK);
+    }
+
+    @RequestMapping("/kanji/{id}/edit")
+    String getKanjiEditForm(@PathVariable long id, Model model) {
+        Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
+        Iterable<Kanji> kanjis = Set.of(session.load(Kanji.class, id));
+        model.addAttribute("kanji", kanjis.iterator().next());
+        return "kanji-edit";
     }
 }

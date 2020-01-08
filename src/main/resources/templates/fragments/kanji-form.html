@@ -6,12 +6,17 @@
                     <input th:case="'add'" pattern="[\u4e00-\u9faf\u3400-\u4dbf]" maxlength="1" size="1" required="">
                     <th:block th:case="'edit'" th:text="${kanji.character}"></th:block>
                 </th:block>
-                <small><input class="text-muted" pattern="([a-z]+, )*[a-z]+" required=""></small>
+
+                <small>
+                    <input class="text-muted" pattern="([a-z]+, )*[a-z]+" required=""
+                           th:value="${type} == 'add' ? '' : ${#strings.replace(#strings.replace(kanji.reading, '[', ''), ']', '')}">
+                </small>
             </h2>
-            Strokes: <input maxlength="2" size="2" pattern="[1-9][0-9]?" required="">
+            Strokes: <input maxlength="2" size="2" pattern="[1-9][0-9]?" required=""
+                            th:value="${type} == 'add' ? '' : ${kanji.strokes}">
         </div>
         <div class="col-auto ml-auto">
-            <button type="submit" class="btn btn-light">Add kanji</button>
+            <button type="submit" class="btn btn-light" th:text="${#strings.capitalize(type)} + ' kanji'"></button>
         </div>
     </form>
 </div>
