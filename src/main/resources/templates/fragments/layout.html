@@ -3,9 +3,9 @@
 <head>
     <title>Kanji Graph DB</title>
 
-    <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.min.css"/>
     <link href="https://fonts.googleapis.com/css?family=Kulim+Park&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/main.css"/>
 
     <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
     <script th:src="@{/webjars/jquery-ui/jquery-ui.min.js}"></script>
@@ -13,6 +13,28 @@
 </head>
 
 <body>
-    <div th:replace="${template}"></div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Kanji Graph Database</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/kanji">Kanji</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/word">Words</a>
+            </li>
+        </ul>
+    </div>
+
+    <span class="navbar-text">
+      &copy; Julia M. Zarzycka
+    </span>
+</nav>
+
+<div th:replace="${template}"></div>
 </body>
 </html>
