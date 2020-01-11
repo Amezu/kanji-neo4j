@@ -9,7 +9,7 @@
             </div>
 
             <div class="col-auto ml-auto">
-                <button type="submit" class="btn btn-light">Add word</button>
+                <button id="add-word" type="submit" class="btn btn-light">Add word</button>
             </div>
         </div>
 
@@ -26,10 +26,11 @@
                         </th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="translations-table">
                     <tr>
-                        <td><input pattern="[a-z]+" required=""></td>
-                        <td><input pattern="[a-zżźćńółęąś]+"></td>
+                        <td><input class="translation" pattern="[a-z]+" required=""></td>
+                        <td><input class="translation" pattern="[a-zżźćńółęąś]+"></td>
+                        <td><button id="translation-plus" class="btn btn-light btn-sm">+</button></td>
                     </tr>
                     </tbody>
                 </table>

@@ -26,7 +26,19 @@ function addWord() {
     });
 }
 
-document.querySelector("button").addEventListener("click", function (event) {
+function addNewTranslationInputs() {
+    var translationsTable = document.querySelector("#translations-table");
+    translationsTable.innerHTML +=
+    "                <tr>" +
+    "                    <td><input class='translation' pattern='[a-z]+'></td>" +
+    "                    <td><input class='translation' pattern='[a-zżźćńółęąś]+'></td>" +
+    "                </tr>";
+    document.querySelector("#translation-plus").addEventListener("click", addNewTranslationInputs);
+}
+
+document.querySelector("#add-word").addEventListener("click", function (event) {
     event.preventDefault();
     addWord();
-})
+});
+
+document.querySelector("#translation-plus").addEventListener("click", addNewTranslationInputs);
