@@ -16,8 +16,8 @@
     <br/>
 
     Words:
+    <th:block th:if="${#lists.isEmpty(kanji.words)}">–</th:block>
     <th:block th:each="word, status : ${kanji.words}">
-        <a th:href="|/word/${word.id}|" th:text="${word.japanese}"></a>
-        <th:block th:text="(${status.last} ? '' : ', ')"></th:block>
+        <a th:href="|/word/${word.id}|" th:text="${word.japanese}"></a><th:block th:text="(${status.last} ? '' : ', ')"></th:block>
     </th:block>
 </div>

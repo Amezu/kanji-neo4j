@@ -12,6 +12,7 @@
 
             <p>
                 Related kanji:
+                <th:block th:if="${#lists.isEmpty(word.kanjis)}">–</th:block>
                 <th:block th:each="kanji, status : ${word.kanjis}">
                     <a th:href="|/kanji/${kanji.id}|" th:text="${kanji.character}"></a><th:block th:text="(${status.last} ? '' : ', ')"></th:block>
                 </th:block>
@@ -31,7 +32,7 @@
                 <tbody>
                 <tr th:each="meaning : ${word.meanings}">
                     <td width="50%" th:text="${meaning.english}"></td>
-                    <td width="50%" th:text="${meaning.polish}"></td>
+                    <td width="50%" th:text="${meaning.polish == '' ? '–' : meaning.polish}"></td>
                 </tr>
                 </tbody>
             </table>
