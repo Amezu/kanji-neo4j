@@ -28,12 +28,11 @@ function addWord() {
 
 function addNewTranslationInputs() {
     var translationsTable = document.querySelector("#translations-table");
-    translationsTable.innerHTML +=
-    "                <tr>" +
+    var translationRow = document.createElement("TR");
+    translationRow.innerHTML =
     "                    <td><input class='translation' pattern='[a-z]+'></td>" +
-    "                    <td><input class='translation' pattern='[a-zżźćńółęąś]+'></td>" +
-    "                </tr>";
-    document.querySelector("#translation-plus").addEventListener("click", addNewTranslationInputs);
+    "                    <td><input class='translation' pattern='[a-zżźćńółęąś]+'></td>";
+    translationsTable.appendChild(translationRow);
 }
 
 document.querySelector("#add-word").addEventListener("click", function (event) {
@@ -41,4 +40,7 @@ document.querySelector("#add-word").addEventListener("click", function (event) {
     addWord();
 });
 
-document.querySelector("#translation-plus").addEventListener("click", addNewTranslationInputs);
+document.querySelector("#translation-plus").addEventListener("click", function (event) {
+  event.preventDefault();
+  addNewTranslationInputs();
+});
