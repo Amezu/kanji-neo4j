@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,9 +57,9 @@ public class WordController {
             @RequestParam("ro") String romaji,
             @RequestParam("en") List<String> meanings) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
-
         Filters sameJapaneseAndRomaji = new Filter("japanese", ComparisonOperator.EQUALS, japanese)
                 .and(new Filter("romaji", ComparisonOperator.EQUALS, romaji));
+
         boolean wordExists = session.count(Word.class, sameJapaneseAndRomaji) != 0;
         if (wordExists) {
             return new ResponseEntity<>(
@@ -67,13 +68,7 @@ public class WordController {
         }
 
         Word word = new Word(japanese, romaji);
-        for (String meaning : meanings) {
-            String[] allLanguages = meaning.split("_");
-            String english = allLanguages[0];
-            String polish = allLanguages.length > 1 ? allLanguages[1] : "";
-            Translation translation = new Translation(english, polish);
-            word.addMeaning(translation);
-        }
+        fillWordMeanings(session, word, meanings);
         session.save(word, 1);
 
         session.query("MATCH (w:Word) WHERE id(w)={id} MATCH (k:Kanji) WHERE w.japanese CONTAINS k.character CREATE (w) -[:CONTAINS]-> (k)",
@@ -82,5 +77,30 @@ public class WordController {
         return new ResponseEntity<>(
                 String.format("Added word %s", word.getJapanese()),
                 HttpStatus.OK);
+    }
+
+    private void fillWordMeanings(Session session, Word word, @RequestParam("en") List<String> meanings) {
+        for (String meaning : meanings) {
+            String[] languagesArray = meaning.split("_");
+            String english = languagesArray[0];
+            String polish = languagesArray.length > 1 ? languagesArray[1] : "";
+            Translation translation = getTranslation(session, english, polish);
+            word.addMeaning(translation);
+        }
+    }
+
+    private Translation getTranslation(Session session, String english, String polish) {
+        Translation translation;
+        Collection<Translation> translations = session.loadAll(Translation.class,
+                new Filter("english", ComparisonOperator.EQUALS, english));
+        if (translations.isEmpty()) {
+            translation = new Translation(english, polish);
+        } else {
+            translation = translations.iterator().next();
+            if (polish != "") {
+                translation.setPolish(polish);
+            }
+        }
+        return translation;
     }
 }

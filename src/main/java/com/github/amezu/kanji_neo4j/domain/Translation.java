@@ -25,6 +25,10 @@ public class Translation extends Entity {
         return polish;
     }
 
+    public void setPolish(String polish) {
+        this.polish = polish;
+    }
+
     public String getColor() {
         return color;
     }
