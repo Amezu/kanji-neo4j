@@ -16,7 +16,7 @@
                             th:value="${type} == 'add' ? '' : ${kanji.strokes}">
         </div>
         <div class="col-auto ml-auto">
-            <button type="submit" class="btn btn-light" th:text="${#strings.capitalize(type)} + ' kanji'"></button>
+            <button id="submit-kanji" type="submit" class="btn btn-light" th:text="${#strings.capitalize(type)} + ' kanji'"></button>
         </div>
     </form>
 </div>

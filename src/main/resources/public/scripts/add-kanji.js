@@ -23,7 +23,7 @@ function addKanji() {
     });
 }
 
-document.querySelector("button").addEventListener("click", function (event) {
+document.querySelector("#submit-kanji").addEventListener("click", function (event) {
     event.preventDefault();
     addKanji();
 })

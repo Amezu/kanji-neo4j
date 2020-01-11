@@ -20,7 +20,7 @@ function editKanji() {
     });
 }
 
-document.querySelector("button").addEventListener("click", function (event) {
+document.querySelector("#submit-kanji").addEventListener("click", function (event) {
     event.preventDefault();
     editKanji();
 })
