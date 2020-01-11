@@ -5,15 +5,20 @@ function addWord() {
 
     var japanese = inputs[0].value;
     var romaji = inputs[1].value;
-    var translation = inputs[2].value;
-    var polish = inputs[3].value;
 
-    if (polish != "") translation += "_" + polish;
+    var translations = [];
+    for(var i = 2; i < inputs.length; i += 2) {
+        var translation = inputs[i].value;
+        var polish = inputs[i+1].value;
+
+        if (polish != "") translation += "_" + polish;
+        if (translation != "") translations.push(translation);
+    }
 
     console.log("Adding word " + japanese);
 
     $.ajax({
-        url: "/word/add?jp=" + japanese + "&ro=" + romaji + "&en=" + translation,
+        url: "/word/add?jp=" + japanese + "&ro=" + romaji + "&en=" + translations,
         success: function (result) {
             alert(result);
             $("form")[0].reset();
