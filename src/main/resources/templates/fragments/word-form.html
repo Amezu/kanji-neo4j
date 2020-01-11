@@ -3,8 +3,8 @@
         <div class="row align-items-center">
             <div class="col">
                 <h2>
-                    <input pattern="[\u4e00-\u9faf\u3400-\u4dbfぁ-ゔァ-ヴー々〆〤]+" size="8" required="">
-                    <small><input class="text-muted" pattern="[a-z]+" required=""></small>
+                    <input class="form-control" pattern="[\u4e00-\u9faf\u3400-\u4dbfぁ-ゔァ-ヴー々〆〤]+" size="8" required="">
+                    <small><input class="form-control text-muted" pattern="[a-z]+" required=""></small>
                 </h2>
             </div>
 
@@ -28,8 +28,8 @@
                     </thead>
                     <tbody id="translations-table">
                     <tr>
-                        <td><input class="translation" pattern="[a-z]+" required=""></td>
-                        <td><input class="translation" pattern="[a-zżźćńółęąś]+"></td>
+                        <td><input class="form-control translation" pattern="[a-z]+" required=""></td>
+                        <td><input class="form-control translation" pattern="[a-zżźćńółęąś]+"></td>
                         <td><button id="translation-plus" class="btn btn-light btn-sm">+</button></td>
                     </tr>
                     </tbody>

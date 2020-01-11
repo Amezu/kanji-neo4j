@@ -3,16 +3,17 @@
         <div class="col">
             <h2>
                 <th:block th:switch="${type}">
-                    <input th:case="'add'" pattern="[\u4e00-\u9faf\u3400-\u4dbf]" maxlength="1" size="1" required="">
+                    <input th:case="'add'" class="form-control" pattern="[\u4e00-\u9faf\u3400-\u4dbf]" maxlength="1"
+                           size="1" required="">
                     <th:block th:case="'edit'" th:text="${kanji.character}"></th:block>
                 </th:block>
 
                 <small>
-                    <input class="text-muted" pattern="([a-z]+, )*[a-z]+" required=""
+                    <input class="text-muted form-control" pattern="([a-z]+, )*[a-z]+" required=""
                            th:value="${type} == 'add' ? '' : ${#strings.replace(#strings.replace(kanji.reading, '[', ''), ']', '')}">
                 </small>
             </h2>
-            Strokes: <input maxlength="2" size="2" pattern="[1-9][0-9]?" required=""
+            Strokes: <input class="form-control" maxlength="2" size="2" pattern="[1-9][0-9]?" required=""
                             th:value="${type} == 'add' ? '' : ${kanji.strokes}">
         </div>
         <div class="col-auto ml-auto">
