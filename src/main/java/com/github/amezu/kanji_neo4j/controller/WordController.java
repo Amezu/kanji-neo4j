@@ -88,6 +88,20 @@ public class WordController {
         return "word-edit";
     }
 
+    @RequestMapping(value = "/{id}/update", produces = "text/plain")
+    ResponseEntity<String> updateKanji(@PathVariable long id, @RequestParam("en") List<String> meanings) {
+        Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
+
+        Word word = session.load(Word.class, id);
+        word.getMeanings().clear();
+        fillWordMeanings(session, word, meanings);
+        session.save(word, 1);
+
+        return new ResponseEntity<>(
+                String.format("Edited word %s (%s)", word.getJapanese(), word.getRomaji()),
+                HttpStatus.OK);
+    }
+
     private void fillWordMeanings(Session session, Word word, @RequestParam("en") List<String> meanings) {
         for (String meaning : meanings) {
             String[] languagesArray = meaning.split("_");
