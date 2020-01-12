@@ -40,7 +40,7 @@ function addNewTranslationInputs() {
     translationsTable.appendChild(translationRow);
 }
 
-document.querySelector("#add-word").addEventListener("click", function (event) {
+document.querySelector("#submit-word").addEventListener("click", function (event) {
     event.preventDefault();
     addWord();
 });

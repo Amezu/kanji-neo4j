@@ -1,15 +1,23 @@
-<div class="card m-3">
+<!--suppress XmlDuplicatedId -->
+<div th:fragment="form (type)" class="card m-3" xmlns:th="http://www.w3.org/1999/xhtml">
     <form class="card-body">
         <div class="row align-items-center">
             <div class="col">
-                <h2>
-                    <input pattern="[\u4e00-\u9faf\u3400-\u4dbfぁ-ゔァ-ヴー々〆〤]+" size="8" required="">
-                    <small><input class="text-muted" pattern="[a-z]+" required=""></small>
+                <h2 th:switch="${type}">
+                    <th:block th:case="'add'">
+                        <input pattern="[\u4e00-\u9faf\u3400-\u4dbfぁ-ゔァ-ヴー々〆〤]+" size="8" required="">
+                        <small><input class="text-muted" pattern="[a-z]+" required=""></small>
+                    </th:block>
+                    <th:block th:case="'edit'">
+                        <th:block th:text="${word.japanese}"></th:block>
+                        <small class="text-muted" th:text="${word.romaji}"></small>
+                    </th:block>
                 </h2>
             </div>
 
             <div class="col-auto ml-auto">
-                <button id="add-word" type="submit" class="btn btn-light">Add word</button>
+                <button id="submit-word" type="submit" class="btn btn-light"
+                        th:text="${#strings.capitalize(type)} + ' word'"></button>
             </div>
         </div>
 
@@ -26,12 +34,25 @@
                         </th>
                     </tr>
                     </thead>
-                    <tbody id="translations-table">
-                    <tr>
-                        <td><input class="translation" pattern="[a-z]+" required=""></td>
-                        <td><input class="translation" pattern="[a-zżźćńółęąś]+"></td>
-                        <td><button id="translation-plus" class="btn btn-light btn-sm">+</button></td>
-                    </tr>
+                    <tbody id="translations-table" th:switch="${type}">
+                    <th:block th:case="'add'">
+                        <tr>
+                            <td><input class="translation" pattern="[a-z]+" required=""></td>
+                            <td><input class="translation" pattern="[a-zżźćńółęąś]+"></td>
+                            <td>
+                                <button id="translation-plus" class="btn btn-light btn-sm">+</button>
+                            </td>
+                        </tr>
+                    </th:block>
+                    <th:block th:case="'edit'" th:each="translation, status : ${word.meanings}">
+                        <tr>
+                            <td><input class="translation" pattern="[a-z]+" required=""></td>
+                            <td><input class="translation" pattern="[a-zżźćńółęąś]+"></td>
+                            <td th:if="${status.first}">
+                                <button id="translation-plus" class="btn btn-light btn-sm">+</button>
+                            </td>
+                        </tr>
+                    </th:block>
                     </tbody>
                 </table>
             </div>
