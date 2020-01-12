@@ -45,9 +45,9 @@ public class WordController {
     @RequestMapping("/{id}")
     String getKanji(@PathVariable long id, Model model) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
-        Iterable<Word> words = Set.of(session.load(Word.class, id));
-        model.addAttribute("words", words);
-        return "word-list";
+        Word word = session.load(Word.class, id);
+        model.addAttribute("word", word);
+        return "word";
     }
 
     @RequestMapping("/add")
