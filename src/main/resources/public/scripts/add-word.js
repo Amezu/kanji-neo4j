@@ -11,8 +11,10 @@ function addWord() {
         var translation = inputs[i].value;
         var polish = inputs[i+1].value;
 
-        if (polish != "") translation += "_" + polish;
-        if (translation != "") translations.push(translation);
+        if (translation != "") {
+            if (polish != "") translation += "_" + polish;
+            translations.push(translation);
+        }
     }
 
     console.log("Adding word " + japanese);
