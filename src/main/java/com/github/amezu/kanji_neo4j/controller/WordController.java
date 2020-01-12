@@ -1,6 +1,7 @@
 package com.github.amezu.kanji_neo4j.controller;
 
 import com.github.amezu.kanji_neo4j.KanjiNeo4jSessionFactory;
+import com.github.amezu.kanji_neo4j.domain.Kanji;
 import com.github.amezu.kanji_neo4j.domain.Translation;
 import com.github.amezu.kanji_neo4j.domain.Word;
 import org.neo4j.ogm.cypher.ComparisonOperator;
@@ -75,8 +76,16 @@ public class WordController {
                 Map.of("id", word.getId()));
 
         return new ResponseEntity<>(
-                String.format("Added word %s", word.getJapanese()),
+                String.format("Added word %s (%s)", word.getJapanese(), word.getRomaji()),
                 HttpStatus.OK);
+    }
+
+    @RequestMapping("/{id}/edit")
+    String getKanjiEditForm(@PathVariable long id, Model model) {
+        Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
+        Word word = session.load(Word.class, id);
+        model.addAttribute("word", word);
+        return "word-edit";
     }
 
     private void fillWordMeanings(Session session, Word word, @RequestParam("en") List<String> meanings) {
