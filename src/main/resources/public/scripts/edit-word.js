@@ -23,7 +23,6 @@ function editWord() {
         },
         error: function (e) {
             alert(e.responseText);
-            location.reload();
         }
     });
 }
@@ -37,9 +36,10 @@ function addNewTranslationInputs() {
     translationsTable.appendChild(translationRow);
 }
 
-document.querySelector("#submit-word").addEventListener("click", function (event) {
+$("form").submit(function (event) {
     event.preventDefault();
     editWord();
+    return false;
 });
 
 document.querySelector("#translation-plus").addEventListener("click", function (event) {

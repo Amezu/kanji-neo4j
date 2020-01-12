@@ -15,12 +15,12 @@ function editKanji() {
         },
         error: function (e) {
             alert(e.responseText);
-            location.reload();
         }
     });
 }
 
-document.querySelector("#submit-kanji").addEventListener("click", function (event) {
+$("form").submit(function (event) {
     event.preventDefault();
     editKanji();
+    return false;
 });
