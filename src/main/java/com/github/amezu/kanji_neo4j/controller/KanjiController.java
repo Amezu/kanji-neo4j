@@ -37,8 +37,8 @@ public class KanjiController {
     @RequestMapping("/kanji/{id}")
     String getKanji(@PathVariable long id, Model model) {
         Session session = KanjiNeo4jSessionFactory.getInstance().getSession();
-        Iterable<Kanji> kanjis = Set.of(session.load(Kanji.class, id));
-        model.addAttribute("kanjis", kanjis);
+        Kanji kanji = session.load(Kanji.class, id);
+        model.addAttribute("kanji", kanji);
         return "kanji";
     }
 
