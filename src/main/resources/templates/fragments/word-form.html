@@ -46,8 +46,8 @@
                     </th:block>
                     <th:block th:case="'edit'">
                         <tr th:each="translation, status : ${word.meanings}">
-                            <td><input pattern="[a-z]+" required=""></td>
-                            <td><input pattern="[a-zżźćńółęąś]+"></td>
+                            <td><input pattern="[a-z]+" required="" th:value="${translation.english}"></td>
+                            <td><input pattern="[a-zżźćńółęąś]+" th:value="${translation.polish}"></td>
                             <td th:if="${status.first}">
                                 <button id="translation-plus" class="btn btn-light btn-sm">+</button>
                             </td>
