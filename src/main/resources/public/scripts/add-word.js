@@ -35,8 +35,8 @@ function addNewTranslationInputs() {
     var translationsTable = document.querySelector("#translations-table");
     var translationRow = document.createElement("TR");
     translationRow.innerHTML =
-    "                    <td><input class='translation' pattern='[a-z]+'></td>" +
-    "                    <td><input class='translation' pattern='[a-zżźćńółęąś]+'></td>";
+    "                    <td><input pattern='[a-z]+'></td>" +
+    "                    <td><input pattern='[a-zżźćńółęąś]+'></td>";
     translationsTable.appendChild(translationRow);
 }
 
