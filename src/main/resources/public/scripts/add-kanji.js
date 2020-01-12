@@ -26,4 +26,4 @@ function addKanji() {
 document.querySelector("#submit-kanji").addEventListener("click", function (event) {
     event.preventDefault();
     addKanji();
-})
+});
