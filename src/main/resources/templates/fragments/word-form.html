@@ -44,8 +44,8 @@
                             </td>
                         </tr>
                     </th:block>
-                    <th:block th:case="'edit'" th:each="translation, status : ${word.meanings}">
-                        <tr>
+                    <th:block th:case="'edit'">
+                        <tr th:each="translation, status : ${word.meanings}">
                             <td><input class="translation" pattern="[a-z]+" required=""></td>
                             <td><input class="translation" pattern="[a-zżźćńółęąś]+"></td>
                             <td th:if="${status.first}">
