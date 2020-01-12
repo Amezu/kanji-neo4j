@@ -2,6 +2,9 @@
     <h2>
         <th:block th:text="${word.japanese}"></th:block>
         <small class="text-muted" th:text="${word.romaji}"></small>
+        <a th:href="|/word/${word.id}/edit|">
+            <img src="https://image.flaticon.com/icons/svg/149/149307.svg" height="15px" alt="Edit"/>
+        </a>
     </h2>
 
     <p>
